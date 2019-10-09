@@ -11,9 +11,11 @@ pixelPerMetricPerim = 0
 cap = cv2.VideoCapture(0)
 time.sleep(0.01)
 
+
 def putTextInFrame(frame, xcord, ycord, variableType:str, variable):
     cv2.putText(frame, variableType + str('%.2f' % round(variable, 2)) + 'cm', (xcord, ycord), color=(255,0,0),
                 thickness=2, fontFace=cv2.FONT_HERSHEY_SIMPLEX, fontScale=0.5)
+
 
 while(True):
     _, frame = cap.read()
@@ -44,6 +46,7 @@ while(True):
         cv2.drawContours(frame, cnts_filt, -1, (0, 255, 0), 3)
         cv2.fillPoly(frame, pts=cnts_filt, color=(255, 0, 0))
 
+
         for cn in cnts_filt:
             epsilon = 0.1 * cv2.arcLength(cn, True)
             approx = cv2.approxPolyDP(cn, epsilon, True)
@@ -55,5 +58,6 @@ while(True):
 
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
+
 cap.release()
 cv2.destroyAllWindows()
