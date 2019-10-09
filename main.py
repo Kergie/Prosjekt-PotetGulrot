@@ -5,7 +5,8 @@ import time
 
 snusBoksConstantArea = 38.48  # cm2
 snusBoksConstantPerim = 21.99 # cm
-pixelPerMetric = 0
+pixelPerMetricArea = 0
+pixelPerMetricPerim = 0
 
 cap = cv2.VideoCapture(0)
 time.sleep(0.01)
@@ -35,21 +36,23 @@ while(True):
             area = cv2.contourArea(cnt)
             if area > 1000:
                 cnts_filt.append(cnt)
+
         if len(cnts_filt) > 0:
             pixelPerMetricArea = snusBoksConstantArea / cv2.contourArea(cnts_filt[0])
             pixelPerMetricPerim = snusBoksConstantPerim / cv2.arcLength(cnts_filt[0], True)
-            putTextInFrame(frame, 50, 50, 'Omkrets: ', cv2.arcLength(cnts_filt[0], True)*pixelPerMetricPerim)
-            putTextInFrame(frame, 50, 100, 'Areal: ', cv2.contourArea(cnts_filt[0])*pixelPerMetricArea)
-            if len(cnts_filt) > 1:
-                putTextInFrame(frame, 300, 50, 'Omkrets: ', cv2.arcLength(cnts_filt[1], True)*pixelPerMetricPerim)
-                putTextInFrame(frame, 300, 100, 'Areal: ', cv2.contourArea(cnts_filt[1])*pixelPerMetricArea)
-                cv2.fillPoly(frame, pts=[cnts_filt[1]], color=(0,255,0))
-            cv2.fillPoly(frame, pts=[cnts_filt[0]], color=(255,0,0))
 
-            cv2.drawContours(frame, cnts_filt, -1, (0, 255, 0), 3)
+        cv2.drawContours(frame, cnts_filt, -1, (0, 255, 0), 3)
+        cv2.fillPoly(frame, pts=cnts_filt, color=(255, 0, 0))
+
+        for cn in cnts_filt:
+            epsilon = 0.1 * cv2.arcLength(cn, True)
+            approx = cv2.approxPolyDP(cn, epsilon, True)
+            putTextInFrame(frame, approx[0,0,0], approx[0,0,1] - 10, 'Omkrets: ', cv2.arcLength(cn, True)*pixelPerMetricPerim)
+            putTextInFrame(frame, approx[0,0,0], approx[0,0,1] - 30, 'Areal: ', cv2.contourArea(cn)*pixelPerMetricArea)
 
     cv2.imshow("Frame", frame)
     cv2.imshow("Edges", edges)
+
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
 cap.release()
