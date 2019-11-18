@@ -1,63 +1,69 @@
-import numpy as np
+from Dead import Dead
+from Draw import drawLines
+from findSnake import FindSnake
+from findTarget import FindTarget
+from maze_recogn import mazeRecognizer
+from rrt_star import multiRRTStar, RRTStar
 import cv2
+import os
 
-import time
+multi = True
+single = False
 
-snusBoksConstantArea = 38.48  # cm2
-snusBoksConstantPerim = 21.99 # cm
-pixelPerMetricArea = 0
-pixelPerMetricPerim = 0
+mazePic = cv2.imread(os.getcwd() + "\\" + "..\\Pictures\\etEllerannet.jpg")
+snakeTargetPic = cv2.imread(os.getcwd() + "\\" + "..\\Pictures\\etEllerAnnet2.jpg")
 
-cap = cv2.VideoCapture(0)
-time.sleep(0.01)
+if multi:
+    mr = mazeRecognizer()
+    deadends = Dead()
+    fs = FindSnake()
 
+    snakeCoordinates = fs.LocateSnakeAverage(1, 1, picture=snakeTargetPic)
 
-def putTextInFrame(frame, xcord, ycord, variableType:str, variable):
-    cv2.putText(frame, variableType + str('%.2f' % round(variable, 2)) + 'cm', (xcord, ycord), color=(255,0,0),
-                thickness=2, fontFace=cv2.FONT_HERSHEY_SIMPLEX, fontScale=0.5)
+    lines, _ = mr.findMaze(mazePic)
+    listOfDeadEnds, _ = deadends.getDeadEnds2(mazePic)
 
+    startPoint = [snakeCoordinates[1][0], snakeCoordinates[1][1]]
 
-while(True):
-    _, frame = cap.read()
+    r = multiRRTStar(rand_area_x=[500, 1600], rand_area_y=[0, 1100], lineList=lines, expand_dis=100.0,
+                     path_resolution=10.0, max_iter=2000, goal_sample_rate=30, edge_dist=30, connect_circle_dist=800,
+                     start_point=startPoint, listOfDeadEnds=listOfDeadEnds)
 
-    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-    gray = cv2.GaussianBlur(gray, (7, 7), 0)
+    fPath = r.run()
+    finalFinalPath = []
 
-    edges = cv2.Canny(gray, 100, 180, apertureSize=3)
-    edges = cv2.dilate(edges, None, iterations=1)
-    edges = cv2.erode(edges, None, iterations=1)
+    for paths in fPath:
+        for data in paths:
+            finalFinalPath.append(data)
 
-    cnts, _ = cv2.findContours(edges, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    sisteBilde = drawLines(snakeTargetPic, finalFinalPath, (255, 0, 0))
 
+    cv2.imshow("Yolo", sisteBilde)
+    cv2.waitKey()
 
+elif single:
+    mr = mazeRecognizer()
+    deadends = Dead()
+    fs = FindSnake()
+    ft = FindTarget()
 
-    cnts_filt = []
+    d, frame, radius, center = ft.getTarget(snakeTargetPic)
 
-    if len(cnts) > 0:
-        for cnt in cnts:
-            area = cv2.contourArea(cnt)
-            if area > 1000:
-                cnts_filt.append(cnt)
+    lines, _ = mr.findMaze(mazePic)
 
-        if len(cnts_filt) > 0:
-            pixelPerMetricArea = snusBoksConstantArea / cv2.contourArea(cnts_filt[0])
-            pixelPerMetricPerim = snusBoksConstantPerim / cv2.arcLength(cnts_filt[0], True)
+    snakeCoordinates = fs.LocateSnakeAverage(1, 1, picture=snakeTargetPic)
+    startPoint = [snakeCoordinates[1][0], snakeCoordinates[1][1]]
 
-        cv2.drawContours(frame, cnts_filt, -1, (0, 255, 0), 3)
-        cv2.fillPoly(frame, pts=cnts_filt, color=(255, 0, 0))
+    r = RRTStar(start=startPoint, goal=[center[0], center[1]], rand_area_x=[250, 1500],
+                rand_area_y=[0, 1100],
+                lineList=lines,
+                expand_dis=100.0, path_resolution=10.0, max_iter=2000, goal_sample_rate=20,
+                connect_circle_dist=800,
+                edge_dist=30)
 
+    path = r.run(finishLoops=False)
 
-        for cn in cnts_filt:
-            epsilon = 0.1 * cv2.arcLength(cn, True)
-            approx = cv2.approxPolyDP(cn, epsilon, True)
-            putTextInFrame(frame, approx[0,0,0], approx[0,0,1] - 10, 'Omkrets: ', cv2.arcLength(cn, True)*pixelPerMetricPerim)
-            putTextInFrame(frame, approx[0,0,0], approx[0,0,1] - 30, 'Areal: ', cv2.contourArea(cn)*pixelPerMetricArea)
+    sisteBilde = drawLines(snakeTargetPic, path, (255, 0, 0))
 
-    cv2.imshow("Frame", frame)
-    cv2.imshow("Edges", edges)
-
-    if cv2.waitKey(1) & 0xFF == ord('q'):
-        break
-
-cap.release()
-cv2.destroyAllWindows()
+    cv2.imshow("Yolo", sisteBilde)
+    cv2.waitKey()
