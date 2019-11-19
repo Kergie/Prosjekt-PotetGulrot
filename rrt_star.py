@@ -18,7 +18,7 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)) +
                 "/../RRT/")
 
 try:
-    from Bison.Pathfinding.rrt import RRT
+    from rrt import RRT
 except ImportError:
     raise
 
@@ -211,7 +211,7 @@ class RRTStar(RRT):
 
         :return: picture of the figure as a NP-array with the path
         """
-        path = self.planning(animation=show_animation, search_until_max_iter=finishLoops)
+        path = self.planning(animation=False, search_until_max_iter=finishLoops)
 
         fig = None
 

@@ -14,7 +14,7 @@ class Dead:
         img_gray = cv2.cvtColor(img_rgb, cv2.COLOR_BGR2GRAY)
         img_cannyre = cv2.Canny(img_gray, 50, 120, apertureSize=3)
 
-        path = os.getcwd()+ "\\" + "..\\..\\Pictures\\DeadEnds/"
+        path = os.getcwd() + "\\Pictures\\DeadEnds/"
         template = cv2.imread(path + "DeadEnd1.PNG", 0)
         template2 = cv2.imread(path + "DeadEnd2.PNG", 0)
         template3 = cv2.imread(path + "DeadEnd3.PNG", 0)
@@ -61,6 +61,17 @@ class Dead:
         template44 = cv2.imread(path + "DeadEnd44.PNG", 0)
         template45 = cv2.imread(path + "DeadEnd45.PNG", 0)
         template46 = cv2.imread(path + "DeadEnd46.PNG", 0)
+        template47 = cv2.imread(path + "DeadEnd47.PNG", 0)
+        template48 = cv2.imread(path + "DeadEnd48.PNG", 0)
+        template49 = cv2.imread(path + "DeadEnd49.PNG", 0)
+        template50 = cv2.imread(path + "DeadEnd50.PNG", 0)
+        template51 = cv2.imread(path + "DeadEnd51.PNG", 0)
+        template52 = cv2.imread(path + "DeadEnd52.PNG", 0)
+        template53 = cv2.imread(path + "DeadEnd53.PNG", 0)
+        template54 = cv2.imread(path + "DeadEnd54.PNG", 0)
+        template55 = cv2.imread(path + "DeadEnd55.PNG", 0)
+        template56 = cv2.imread(path + "DeadEnd56.PNG", 0)
+        template57 = cv2.imread(path + "DeadEnd57.PNG", 0)
 
 
 
@@ -129,6 +140,17 @@ class Dead:
         templateList.append(template44)
         templateList.append(template45)
         templateList.append(template46)
+        templateList.append(template47)
+        templateList.append(template48)
+        templateList.append(template49)
+        templateList.append(template50)
+        templateList.append(template51)
+        templateList.append(template52)
+        templateList.append(template53)
+        templateList.append(template54)
+        templateList.append(template55)
+        templateList.append(template56)
+        templateList.append(template57)
 
 
 
@@ -141,7 +163,7 @@ class Dead:
         res3 = cv2.matchTemplate(img_gray,template4,cv2.TM_CCOEFF_NORMED)
         res4 = cv2.matchTemplate(img_gray,template5,cv2.TM_CCOEFF_NORMED)
         res5 = cv2.matchTemplate(img_gray,template6,cv2.TM_CCOEFF_NORMED)"""
-        threshold = 0.82
+        threshold = 0.65
 
         # loc = np.where( res4 >= threshold)# and np.where(res1 >= threshold) and np.where(res2 >= threshold) and np.where(res3 >= threshold)
 
@@ -197,9 +219,9 @@ class Dead:
         for point in deadEnds:
             cv2.circle(img_rgb, (int(point[0]), int(point[1])),10,(255,0,255), 3)
 
-        #cv2.imshow("img", img_rgb)
+        cv2.imshow("img", img_rgb)
 
-        #cv2.waitKey()
+        cv2.waitKey()
         return deadEnds, img_rgb
 
 if __name__ == "__main__":

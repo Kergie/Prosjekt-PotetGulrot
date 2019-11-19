@@ -10,15 +10,16 @@ import os
 multi = True
 single = False
 
-mazePic = cv2.imread(os.getcwd() + "\\" + "..\\Pictures\\etEllerannet.jpg")
-snakeTargetPic = cv2.imread(os.getcwd() + "\\" + "..\\Pictures\\etEllerAnnet2.jpg")
+mazePic = cv2.imread(os.getcwd() + "\\Pictures\\onlyMazeTest2.jpg", -1)
+snakeTargetPic = cv2.imread(os.getcwd() + "\\Pictures\\snakeAndTarget.png", -1)
+onlySnakePic = cv2.imread(os.getcwd() + "\\Pictures\\onlySnake.png", -1)
 
 if multi:
     mr = mazeRecognizer()
     deadends = Dead()
     fs = FindSnake()
 
-    snakeCoordinates = fs.LocateSnakeAverage(1, 1, picture=snakeTargetPic)
+    snakeCoordinates, _ = fs.LocateSnakeAverage(1, 1, picture=onlySnakePic)
 
     lines, _ = mr.findMaze(mazePic)
     listOfDeadEnds, _ = deadends.getDeadEnds2(mazePic)
@@ -51,7 +52,7 @@ elif single:
 
     lines, _ = mr.findMaze(mazePic)
 
-    snakeCoordinates = fs.LocateSnakeAverage(1, 1, picture=snakeTargetPic)
+    snakeCoordinates, _ = fs.LocateSnakeAverage(1, 1, picture=onlySnakePic)
     startPoint = [snakeCoordinates[1][0], snakeCoordinates[1][1]]
 
     r = RRTStar(start=startPoint, goal=[center[0], center[1]], rand_area_x=[250, 1500],
@@ -61,7 +62,7 @@ elif single:
                 connect_circle_dist=800,
                 edge_dist=30)
 
-    path = r.run(finishLoops=False)
+    _, path = r.run(finishLoops=False)
 
     sisteBilde = drawLines(snakeTargetPic, path, (255, 0, 0))
 

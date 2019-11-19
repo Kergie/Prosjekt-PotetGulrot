@@ -4,7 +4,7 @@ import cv2
 
 realtime = False
 stillPic = False
-testing = True
+testing = False
 
 
 
