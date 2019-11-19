@@ -163,7 +163,7 @@ class Dead:
         res3 = cv2.matchTemplate(img_gray,template4,cv2.TM_CCOEFF_NORMED)
         res4 = cv2.matchTemplate(img_gray,template5,cv2.TM_CCOEFF_NORMED)
         res5 = cv2.matchTemplate(img_gray,template6,cv2.TM_CCOEFF_NORMED)"""
-        threshold = 0.65
+        threshold = 0.82
 
         # loc = np.where( res4 >= threshold)# and np.where(res1 >= threshold) and np.where(res2 >= threshold) and np.where(res3 >= threshold)
 

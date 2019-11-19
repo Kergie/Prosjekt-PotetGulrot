@@ -33,7 +33,7 @@ class mazeRecognizer:
         grayfilt = cv2.cvtColor(picture, cv2.COLOR_BGR2GRAY)
         grayfilt = cv2.GaussianBlur(grayfilt, (9, 9), 0)
 
-        edges = cv2.Canny(grayfilt, 50, 120, apertureSize=3)
+        edges = cv2.Canny(grayfilt, 70, 120, apertureSize=3)
         edges = cv2.dilate(edges, None, iterations=3)
         edges = cv2.erode(edges, None, iterations=2)
         kernel = np.ones((7, 7), np.uint8)
@@ -60,7 +60,7 @@ class mazeRecognizer:
 
         edges2 = self.filtering(pic2)
 
-        lines2 = cv2.HoughLinesP(edges2, 1, np.pi / 1000, 50, maxLineGap=90, minLineLength=80)
+        lines2 = cv2.HoughLinesP(edges2, 1, np.pi / 1000, 50, maxLineGap=50, minLineLength=90)
 
         for data in lines2:
             x1 = data[0][0]
@@ -70,7 +70,8 @@ class mazeRecognizer:
 
             cv2.line(pic2, (x1, y1), (x2, y2), (0, 255, 0), 2)
 
-
+        cv2.imshow("Maze", pic2)
+        cv2.waitKey()
 
         return lines2, cv2.cvtColor(pic2, cv2.COLOR_BGR2RGB)
 
