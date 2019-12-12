@@ -7,8 +7,8 @@ from rrt_star import multiRRTStar, RRTStar
 import cv2
 import os
 
-multi = True
-single = False
+multi = False
+single = True
 
 mazePic = cv2.imread(os.getcwd() + "\\Pictures\\onlyMazeTest2.jpg")
 snakeTargetPic = cv2.imread(os.getcwd() + "\\Pictures\\snakeAndTarget.png")
@@ -52,7 +52,11 @@ elif single:
 
     lines, _ = mr.findMaze(mazePic)
 
-    snakeCoordinates, _ = fs.LocateSnakeAverage(1, 1, picture=onlySnakePic)
+    snakeCoordinates, maskPic = fs.LocateSnakeAverage(1, 1, picture=onlySnakePic)
+
+    cv2.imshow("Masked", maskPic)
+    cv2.waitKey()
+
     startPoint = [snakeCoordinates[1][0], snakeCoordinates[1][1]]
 
     r = RRTStar(start=startPoint, goal=[center[0], center[1]], rand_area_x=[250, 1500],
@@ -65,6 +69,7 @@ elif single:
     _, path = r.run(finishLoops=False)
 
     sisteBilde = drawLines(snakeTargetPic, path, (255, 0, 0))
+
 
     cv2.imshow("Yolo", sisteBilde)
     cv2.waitKey()
